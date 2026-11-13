@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>00878 國泰永續高股息｜除息打平防線與跌價壓力測試工具</title>
+  <style>
+    :root {
+      --bg-dark: #0b101e;
+      --bg-card: #151d30;
+      --bg-card-alt: #1b263e;
+      --bg-input: #0f1626;
+      --border-color: #2a3958;
+      --text-main: #f0f4f8;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-gold: #fbbf24;
+      --tw-red: #ff4d4f;
+      --tw-red-bg: rgba(255, 77, 79, 0.14);
+      --tw-green: #22c55e;
+      --tw-green-bg: rgba(34, 197, 94, 0.14);
+      --buffer-amber: #f59e0b;
+      --buffer-amber-bg: rgba(245, 158, 11, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 20px 16px 48px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(135deg, #162238 0%, #0f172a 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .title-group h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-ticker {
+      background: #2563eb;
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .title-group p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-preset {
+      background: var(--bg-card-alt);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 13px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-preset:hover, .btn-preset.active {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* Layout Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 960px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+
+    /* Mode Tabs */
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .mode-tab {
+      text-align: center;
+      padding: 8px 0;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .mode-tab.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-label span.val-highlight {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus, select:focus {
+      border-color: var(--accent-blue);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 0.86rem;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #334155;
+      transition: .25s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2563eb;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Summary Box in Sidebar */
+    .cost-summary-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-size: 0.85rem;
+    }
+
+    .cost-summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .cost-summary-row.total {
+      border-top: 1px solid var(--border-color);
+      margin-top: 6px;
+      padding-top: 8px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #fff;
+    }
+
+    /* Right Column KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1100px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-blue);
+    }
+
+    .kpi-card.gold::before { background: var(--accent-gold); }
+    .kpi-card.red::before { background: var(--tw-red); }
+    .kpi-card.green::before { background: var(--tw-green); }
+
+    .kpi-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Visual Scale Section */
+    .scale-container {
+      margin-bottom: 20px;
+    }
+
+    .zone-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.82rem;
+      margin-bottom: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .price-ruler-wrap {
+      position: relative;
+      padding: 38px 16px 32px;
+      background: var(--bg-input);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 14px;
+    }
+
+    .price-bar {
+      height: 18px;
+      width: 100%;
+      border-radius: 9px;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .zone-loss {
+      background: linear-gradient(90deg, rgba(34,197,94,0.75) 0%, rgba(34,197,94,0.45) 100%);
+      height: 100%;
+    }
+
+    .zone-buffer {
+      background: linear-gradient(90deg, rgba(245,158,11,0.55) 0%, rgba(245,158,11,0.85) 100%);
+      height: 100%;
+    }
+
+    .zone-profit {
+      background: linear-gradient(90deg, rgba(255,77,79,0.55) 0%, rgba(255,77,79,0.85) 100%);
+      height: 100%;
+    }
+
+    .marker {
+      position: absolute;
+      top: 10px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .marker-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      white-space: nowrap;
+      margin-bottom: 4px;
+    }
+
+    .marker-line {
+      width: 2px;
+      height: 36px;
+      background: #fff;
+    }
+
+    .marker.bottom {
+      top: auto;
+      bottom: 6px;
+      flex-direction: column-reverse;
+    }
+
+    .marker.bottom .marker-tag {
+      margin-bottom: 0;
+      margin-top: 4px;
+    }
+
+    .insight-banner {
+      background: rgba(56, 189, 248, 0.1);
+      border-left: 4px solid var(--accent-blue);
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+    }
+
+    /* Sensitivity Table */
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      text-align: right;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--bg-card-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+    }
+
+    th:last-child, td:last-child {
+      text-align: center;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    tr.row-highlight-be {
+      background: rgba(251, 191, 36, 0.15) !important;
+      font-weight: 700;
+    }
+
+    tr.row-highlight-now {
+      outline: 1.5px solid var(--accent-blue);
+      background: rgba(56, 189, 248, 0.12) !important;
+    }
+
+    .text-up { color: var(--tw-red); font-weight: 600; }
+    .text-down { color: var(--tw-green); font-weight: 600; }
+    .text-amber { color: var(--accent-gold); font-weight: 600; }
+
+    .status-pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .pill-profit {
+      background: var(--tw-red-bg);
+      color: var(--tw-red);
+      border: 1px solid rgba(255, 77, 79, 0.4);
+    }
+
+    .pill-buffer {
+      background: var(--buffer-amber-bg);
+      color: var(--buffer-amber);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .pill-loss {
+      background: var(--tw-green-bg);
+      color: var(--tw-green);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .formula-footer {
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .formula-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      border-radius: 10px;
+    }
+
+    .formula-box h4 {
+      color: #fff;
+      margin-bottom: 4px;
+      font-size: 0.86rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Header & Presets -->
+    <header class="header">
+      <div class="title-group">
+        <h1>
+          <span class="badge-ticker">00878</span>
+          國泰永續高股息｜除息打平防線與跌價壓力測試儀表板
+        </h1>
+        <p>精算手續費、0.1% ETF 證交稅與 10 元跨行匯費後，找出股利不被跌價吃光的真實防線</p>
+      </div>
+      <div class="preset-group">
+        <button class="btn-preset active" onclick="applyPreset('current60', this)">目前庫存 (60股 / 均價33.67)</button>
+        <button class="btn-preset" onclick="applyPreset('plan5000', this)">投入 5,000 元計畫 (33.00元)</button>
+        <button class="btn-preset" onclick="applyPreset('div200', this)">實領 200 元股息目標 (168股)</button>
+        <button class="btn-preset" onclick="applyPreset('lot1000', this)">整張存股比較 (1,000股)</button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- Left Sidebar: Parameters Input -->
+      <aside class="card">
+        <div class="card-title">
+          <span>⚙️ 參數與摩擦成本設定</span>
+          <span style="font-size: 0.78rem; color: var(--accent-blue);">即時聯動試算</span>
+        </div>
+
+        <div class="mode-tabs">
+          <div id="tab-shares" class="mode-tab active" onclick="switchMode('shares')">依持有股數輸入</div>
+          <div id="tab-budget" class="mode-tab" onclick="switchMode('budget')">依投入預算換算</div>
+        </div>
+
+        <!-- Buy Price -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>買進成交均價 (P<sub>buy</sub>)</span>
+            <span class="val-highlight" id="lbl-pbuy">33.67 元</span>
+          </label>
+          <div class="input-row">
+            <input type="number" id="inp-pbuy" value="33.67" step="0.01" min="10" max="100" oninput="syncCalc()" />
+          </div>
+        </div>
+
+        <!-- Shares Mode Input -->
+        <div class="form-group" id="group-shares">
+          <label class="form-label">
+            <span>持有 / 買進股數 (N)</span>
+            <span class="val-highlight" id="lbl-shares">60 股</span>
+          </label>
+          <div class="input-row">
+            <input type="number" id="inp-shares" value="60" step="1" min="1" max="100000" oninput="syncCalc()" />
+          </div>
+        </div>
+
+        <!-- Budget Mode Input (Hidden by default) -->
+        <div class="form-group" id="group-budget" style="display: none;">
+          <label class="form-label">
+            <span>預計投入本金預算 (元)</span>
+            <span class="val-highlight" id="lbl-budget-shares">可買 151 股</span>
+          </label>
+          <div class="input-row">
+            <input type="number" id="inp-budget" value="5000" step="100" min="100" max="10000000" oninput="syncCalc()" />
+          </div>
+        </div>
+
+        <!-- Dividend Per Share -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>單次每股配息金額 (D)</span>
+            <span class="val-highlight" id="lbl-div">1.250 元</span>
+          </label>
+          <div class="input-row">
+            <input type="number" id="inp-div" value="1.250" step="0.01" min="0.01" max="10" oninput="syncCalc()" />
+          </div>
+        </div>
+
+        <!-- Dividend Quarters Count -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>累計領息次數 (k 季)</span>
+            <span class="val-highlight" id="lbl-quarters">1 次 (單季除息)</span>
+          </label>
+          <input type="range" id="inp-quarters" value="1" min="1" max="12" step="1" oninput="syncCalc()" />
+        </div>
+
+        <!-- Simulated Current / Target Market Price -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>測試市價 / 目前股價 (P<sub>now</sub>)</span>
+            <span class="val-highlight" id="lbl-pnow">33.65 元</span>
+          </label>
+          <div class="input-row" style="margin-bottom: 6px;">
+            <input type="number" id="inp-pnow" value="33.65" step="0.05" min="15" max="60" oninput="syncFromPnowInput()" />
+          </div>
+          <input type="range" id="rng-pnow" value="33.65" min="29.00" max="36.50" step="0.05" oninput="syncFromPnowRange()" />
+        </div>
+
+        <!-- Friction Cost Settings -->
+        <div style="margin-top: 18px; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: #fff;">
+          🧾 交易稅費與匯費條件
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span>電子下單手續費折數 (公定 0.1425%)</span>
+            <span class="val-highlight" id="lbl-discount">6 折</span>
+          </label>
+          <select id="sel-discount" onchange="syncCalc()">
+            <option value="1">無折扣 (10 折)</option>
+            <option value="0.6" selected>元大電子下單預設 (6 折)</option>
+            <option value="0.5">專案優惠 (5 折)</option>
+            <option value="0.38">低手續費優惠 (3.8 折)</option>
+            <option value="0.28">大戶/數位優惠 (2.8 折)</option>
+          </select>
+        </div>
+
+        <div class="toggle-row">
+          <span>零股最低手續費 1 元 (關則以 20 元計)</span>
+          <label class="switch">
+            <input type="checkbox" id="chk-min1" checked onchange="syncCalc()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <span>扣除股息跨行匯費 (非台新保管行 10元/次)</span>
+          <label class="switch">
+            <input type="checkbox" id="chk-wire" checked onchange="syncCalc()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <span>對齊帳面買進總成本 (60股鎖定 2,020 元)</span>
+          <label class="switch">
+            <input type="checkbox" id="chk-lock2020" checked onchange="syncCalc()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Real-time Cost Breakdown -->
+        <div class="cost-summary-box">
+          <div class="cost-summary-row">
+            <span style="color: var(--text-muted);">實際試算股數：</span>
+            <strong id="sum-shares">60 股</strong>
+          </div>
+          <div class="cost-summary-row">
+            <span style="color: var(--text-muted);">買進成交價金 + 手續費：</span>
+            <span id="sum-buy-detail">2,020 元 (含手續費)</span>
+          </div>
+          <div class="cost-summary-row">
+            <span style="color: var(--text-muted);">帳面總股息 (×<span id="sum-k">1</span>次)：</span>
+            <span id="sum-div-gross">75 元</span>
+          </div>
+          <div class="cost-summary-row">
+            <span style="color: var(--text-muted);">跨行匯費扣除：</span>
+            <span id="sum-wire-cost" style="color: var(--tw-green);">-10 元</span>
+          </div>
+          <div class="cost-summary-row total">
+            <span>實領入袋淨股息 (Div<sub>net</sub>)：</span>
+            <span id="sum-div-net" style="color: var(--accent-gold);">65 元</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Content Area -->
+      <main>
+        <!-- Module 2: Core KPI Cards -->
+        <section class="kpi-grid">
+          <div class="kpi-card gold">
+            <div class="kpi-label">🛡️ 含息損益兩平防線價 (P<sub>BE</sub>)</div>
+            <div class="kpi-value" id="kpi-pbe">32.67 元</div>
+            <div class="kpi-sub" id="kpi-pbe-sub">純除息參考價 32.42 元｜需填息 +0.25 元</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">📉 最大容忍跌價空間 (ΔP<sub>max</sub>)</div>
+            <div class="kpi-value" id="kpi-maxdrop">-1.00 元</div>
+            <div class="kpi-sub" id="kpi-maxdrop-pct">自均價最多可跌 -2.97% 不傷本金</div>
+          </div>
+
+          <div class="kpi-card red">
+            <div class="kpi-label">💸 摩擦成本侵蝕股息比</div>
+            <div class="kpi-value" id="kpi-erosion">18.7%</div>
+            <div class="kpi-sub" id="kpi-erosion-sub">總稅費與匯費共 14 元 / 帳面股息 75 元</div>
+          </div>
+
+          <div class="kpi-card green" id="kpi-now-card">
+            <div class="kpi-label">📊 測試市價 (<span id="kpi-now-price">33.65</span>元) 含息總損益</div>
+            <div class="kpi-value" id="kpi-now-pnl">+59 元</div>
+            <div class="kpi-sub" id="kpi-now-status">狀態：股息緩衝保護中 (總報酬 +2.92%)</div>
+          </div>
+        </section>
+
+        <!-- Module 3: Visual Price Scale -->
+        <section class="card scale-container">
+          <div class="card-title">
+            <span>📏 「除息參考價 vs. 真實打平防線」視覺化價格量尺</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">台股配色：紅賺 / 黃緩衝 / 綠賠本金</span>
+          </div>
+
+          <div class="zone-legend">
+            <div class="legend-item">
+              <span class="dot" style="background: var(--tw-green);"></span>
+              <span><strong>綠區 (跌破打平價)</strong>：股利被跌價與稅費完全吃光，開始倒賠本金</span>
+            </div>
+            <div class="legend-item">
+              <span class="dot" style="background: var(--buffer-amber);"></span>
+              <span><strong>黃區 (股息緩衝區)</strong>：帳面跌價，但實領股息仍大於價差損失（整體仍賺）</span>
+            </div>
+            <div class="legend-item">
+              <span class="dot" style="background: var(--tw-red);"></span>
+              <span><strong>紅區 (完全填息區)</strong>：股價高於買進成本，股息全拿且外加資本利得</span>
+            </div>
+          </div>
+
+          <div class="price-ruler-wrap">
+            <!-- Top Markers -->
+            <div class="marker" id="mk-ex" style="left: 30%;">
+              <div class="marker-tag" style="background: #475569; color: #fff;" id="mk-ex-txt">除息平價 32.42</div>
+              <div class="marker-line" style="background: #94a3b8;"></div>
+            </div>
+
+            <div class="marker" id="mk-be" style="left: 45%;">
+              <div class="marker-tag" style="background: var(--accent-gold); color: #000;" id="mk-be-txt">真實打平 32.67</div>
+              <div class="marker-line" style="background: var(--accent-gold);"></div>
+            </div>
+
+            <div class="marker" id="mk-buy" style="left: 72%;">
+              <div class="marker-tag" style="background: var(--tw-red); color: #fff;" id="mk-buy-txt">買進均價 33.67</div>
+              <div class="marker-line" style="background: var(--tw-red);"></div>
+            </div>
+
+            <!-- Bar -->
+            <div class="price-bar">
+              <div class="zone-loss" id="bar-loss" style="width: 45%;"></div>
+              <div class="zone-buffer" id="bar-buffer" style="width: 27%;"></div>
+              <div class="zone-profit" id="bar-profit" style="width: 28%;"></div>
+            </div>
+
+            <!-- Bottom Marker for Current Price -->
+            <div class="marker bottom" id="mk-now" style="left: 70%;">
+              <div class="marker-tag" style="background: var(--accent-blue); color: #000;" id="mk-now-txt">▲ 測試市價 33.65</div>
+              <div class="marker-line" style="background: var(--accent-blue); height: 26px;"></div>
+            </div>
+          </div>
+
+          <div class="insight-banner" id="insight-text">
+            💡 <strong>實戰診斷：</strong>在持有 <strong>60 股</strong>（總成本 <strong>2,020 元</strong>）下，本次配息 75 元扣掉 10 元匯費後實拿 <strong>65 元</strong>。加計賣出時的證交稅與手續費，股價只要跌破 <strong>32.67 元</strong>（較買價下跌超過 1.00 元），這筆股利就會被完全吞噬！
+          </div>
+        </section>
+
+        <!-- Module 4: Price Drop Sensitivity Matrix -->
+        <section class="card">
+          <div class="table-controls">
+            <div style="font-weight: 700; font-size: 1.02rem; color: #fff;">
+              📋 股價跌價壓力測試矩陣 (Price Drop Sensitivity Matrix)
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.84rem;">
+              <span style="color: var(--text-muted);">價格間距：</span>
+              <select id="sel-step" style="width: auto; padding: 5px 10px;" onchange="syncCalc()">
+                <option value="0.25" selected>每 0.25 元一階</option>
+                <option value="0.5">每 0.50 元一階</option>
+                <option value="0.1">每 0.10 元一階 (精細)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>測試股價 (P<sub>sell</sub>)</th>
+                  <th>較買價漲跌 (ΔP)</th>
+                  <th>賣出實拿淨額</th>
+                  <th>帳面價差損益</th>
+                  <th>實領淨股息</th>
+                  <th>含息總淨損益</th>
+                  <th>股利保留率 / 損益狀態</th>
+                </tr>
+              </thead>
+              <tbody id="matrix-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Bottom Formula Note -->
+        <section class="formula-footer">
+          <div class="formula-box">
+            <h4>📐 1. 買進總成本 (C<sub>buy</sub>)</h4>
+            <p>買進成交價金 + max(低收門檻, 四捨五入(價金 × 0.1425% × 折數))。當開啟「鎖定 2,020 元」且股數為 60 股時，直接對齊元大庫存畫面顯示之 2,020 元。</p>
+          </div>
+          <div class="formula-box">
+            <h4>🏦 2. 實領淨股息 (Div<sub>net</sub>)</h4>
+            <p>單次實領 = max(0, 四捨五入(每股配息 D × 股數 N) - 跨行匯費 10 元)。小額零股投資時，10 元匯費佔比高，擴大股數可顯著降低侵蝕率。</p>
+          </div>
+          <div class="formula-box">
+            <h4>⚖️ 3. 含息打平防線價 (P<sub>BE</sub>)</h4>
+            <p>尋找使「賣出實拿淨額 (扣賣出手續費與 0.1% 證交稅) + 實領淨股息 = 買進總成本」之臨界股價。跌破此價位即代表貼息虧損超過實領股息。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let currentMode = 'shares';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.getElementById('tab-shares').classList.toggle('active', mode === 'shares');
+      document.getElementById('tab-budget').classList.toggle('active', mode === 'budget');
+      document.getElementById('group-shares').style.display = mode === 'shares' ? 'block' : 'none';
+      document.getElementById('group-budget').style.display = mode === 'budget' ? 'block' : 'none';
+      syncCalc();
+    }
+
+    function applyPreset(presetKey, btnEl) {
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const pbuyEl = document.getElementById('inp-pbuy');
+      const sharesEl = document.getElementById('inp-shares');
+      const budgetEl = document.getElementById('inp-budget');
+      const divEl = document.getElementById('inp-div');
+      const qEl = document.getElementById('inp-quarters');
+      const pnowEl = document.getElementById('inp-pnow');
+      const rngPnowEl = document.getElementById('rng-pnow');
+      const min1El = document.getElementById('chk-min1');
+      const wireEl = document.getElementById('chk-wire');
+      const lock2020El = document.getElementById('chk-lock2020');
+
+      if (presetKey === 'current60') {
+        switchMode('shares');
+        pbuyEl.value = '33.67';
+        sharesEl.value = '60';
+        divEl.value = '1.250';
+        qEl.value = '1';
+        pnowEl.value = '33.65';
+        rngPnowEl.value = '33.65';
+        min1El.checked = true;
+        wireEl.checked = true;
+        lock2020El.checked = true;
+      } else if (presetKey === 'plan5000') {
+        switchMode('budget');
+        pbuyEl.value = '33.00';
+        budgetEl.value = '5000';
+        divEl.value = '1.250';
+        qEl.value = '1';
+        pnowEl.value = '33.00';
+        rngPnowEl.value = '33.00';
+        min1El.checked = true;
+        wireEl.checked = true;
+        lock2020El.checked = false;
+      } else if (presetKey === 'div200') {
+        switchMode('shares');
+        pbuyEl.value = '33.00';
+        sharesEl.value = '168';
+        divEl.value = '1.250';
+        qEl.value = '1';
+        pnowEl.value = '33.00';
+        rngPnowEl.value = '33.00';
+        min1El.checked = true;
+        wireEl.checked = true;
+        lock2020El.checked = false;
+      } else if (presetKey === 'lot1000') {
+        switchMode('shares');
+        pbuyEl.value = '33.00';
+        sharesEl.value = '1000';
+        divEl.value = '1.250';
+        qEl.value = '1';
+        pnowEl.value = '33.00';
+        rngPnowEl.value = '33.00';
+        min1El.checked = false; // 整張低收 20 元
+        wireEl.checked = true;
+        lock2020El.checked = false;
+      }
+      syncCalc();
+    }
+
+    function syncFromPnowInput() {
+      const val = parseFloat(document.getElementById('inp-pnow').value) || 33.00;
+      document.getElementById('rng-pnow').value = val;
+      syncCalc();
+    }
+
+    function syncFromPnowRange() {
+      const val = parseFloat(document.getElementById('rng-pnow').value) || 33.00;
+      document.getElementById('inp-pnow').value = val.toFixed(2);
+      syncCalc();
+    }
+
+    function calcFee(amount, discount, minFee) {
+      const raw = Math.round(amount * 0.001425 * discount);
+      return Math.max(minFee, raw);
+    }
+
+    function calcSellNet(price, shares, discount, minFee) {
+      const gross = Math.round(price * shares);
+      const fee = calcFee(gross, discount, minFee);
+      const tax = Math.floor(gross * 0.001); // ETF 0.1% 證交稅無條件捨去至整數元
+      return {
+        gross,
+        fee,
+        tax,
+        net: gross - fee - tax
+      };
+    }
+
+    function syncCalc() {
+      const pBuy = Math.max(1, parseFloat(document.getElementById('inp-pbuy').value) || 33.67);
+      const divPerShare = Math.max(0, parseFloat(document.getElementById('inp-div').value) || 1.25);
+      const quarters = parseInt(document.getElementById('inp-quarters').value, 10) || 1;
+      const pNow = Math.max(1, parseFloat(document.getElementById('inp-pnow').value) || 33.00);
+      const discount = parseFloat(document.getElementById('sel-discount').value) || 0.6;
+      const minFee = document.getElementById('chk-min1').checked ? 1 : 20;
+      const wireFeePerTime = document.getElementById('chk-wire').checked ? 10 : 0;
+      const lock2020 = document.getElementById('chk-lock2020').checked;
+
+      let shares = 60;
+      if (currentMode === 'shares') {
+        shares = Math.max(1, parseInt(document.getElementById('inp-shares').value, 10) || 60);
+      } else {
+        const budget = Math.max(100, parseFloat(document.getElementById('inp-budget').value) || 5000);
+        shares = Math.max(1, Math.floor(budget / pBuy));
+        document.getElementById('lbl-budget-shares').textContent = `可買 ${shares.toLocaleString()} 股`;
+      }
+
+      // Update small labels
+      document.getElementById('lbl-pbuy').textContent = `${pBuy.toFixed(2)} 元`;
+      document.getElementById('lbl-shares').textContent = `${shares.toLocaleString()} 股`;
+      document.getElementById('lbl-div').textContent = `${divPerShare.toFixed(3)} 元`;
+      document.getElementById('lbl-quarters').textContent = `${quarters} 次 (${quarters === 1 ? '單季除息' : '累計 ' + quarters + ' 季'})`;
+      document.getElementById('lbl-pnow').textContent = `${pNow.toFixed(2)} 元`;
+      document.getElementById('lbl-discount').textContent = discount === 1 ? '無折扣' : `${(discount * 10).toFixed(1).replace('.0', '')} 折`;
+
+      // 1. Calculate Buy Cost
+      const buyGross = Math.round(pBuy * shares);
+      let buyFee = calcFee(buyGross, discount, minFee);
+      let cBuy = buyGross + buyFee;
+
+      if (lock2020 && shares === 60 && Math.abs(pBuy - 33.67) < 0.05) {
+        cBuy = 2020;
+        buyFee = 2020 - 2019; // 對齊元大庫存顯示
+      }
+
+      // 2. Calculate Dividend
+      const singleDivGross = Math.round(divPerShare * shares);
+      const singleDivNet = Math.max(0, singleDivGross - wireFeePerTime);
+      const totalDivGross = singleDivGross * quarters;
+      const totalWireCost = Math.min(singleDivGross, wireFeePerTime) * quarters;
+      const totalDivNet = singleDivNet * quarters;
+
+      // Update Sidebar Summary
+      document.getElementById('sum-shares').textContent = `${shares.toLocaleString()} 股`;
+      document.getElementById('sum-buy-detail').textContent = `${cBuy.toLocaleString()} 元 (含買進手續費 ${buyFee} 元)`;
+      document.getElementById('sum-k').textContent = quarters;
+      document.getElementById('sum-div-gross').textContent = `${totalDivGross.toLocaleString()} 元`;
+      document.getElementById('sum-wire-cost').textContent = `-${totalWireCost.toLocaleString()} 元`;
+      document.getElementById('sum-div-net').textContent = `${totalDivNet.toLocaleString()} 元`;
+
+      // 3. Find Exact Break-Even Price (P_BE)
+      // Target: sellNet(P_BE) + totalDivNet >= cBuy
+      const targetSellNet = cBuy - totalDivNet;
+      let pBE = 0.01;
+      for (let p = 1.00; p <= pBuy + 10; p += 0.01) {
+        const res = calcSellNet(p, shares, discount, minFee);
+        if (res.net >= targetSellNet) {
+          pBE = parseFloat(p.toFixed(2));
+          break;
+        }
+      }
+
+      const pureExPrice = parseFloat((pBuy - divPerShare * quarters).toFixed(2));
+      const fillNeeded = (pBE - pureExPrice).toFixed(2);
+      const maxDropVal = (pBE - pBuy).toFixed(2);
+      const maxDropPct = (((pBE - pBuy) / pBuy) * 100).toFixed(2);
+
+      // 4. Friction Cost at Break-even
+      const sellAtBE = calcSellNet(pBE, shares, discount, minFee);
+      const totalFriction = buyFee + sellAtBE.fee + sellAtBE.tax + totalWireCost;
+      const erosionPct = totalDivGross > 0 ? ((totalFriction / totalDivGross) * 100).toFixed(1) : '0.0';
+
+      // 5. Current Market Price (P_now) Evaluation
+      const sellNow = calcSellNet(pNow, shares, discount, minFee);
+      const capPnLNow = sellNow.net - cBuy;
+      const totalPnLNow = capPnLNow + totalDivNet;
+      const totalRoiNow = ((totalPnLNow / cBuy) * 100).toFixed(2);
+
+      // Update KPI Cards
+      document.getElementById('kpi-pbe').textContent = `${pBE.toFixed(2)} 元`;
+      document.getElementById('kpi-pbe-sub').textContent = `純除息價 ${pureExPrice.toFixed(2)} 元｜需微幅填息 +${fillNeeded} 元`;
+
+      document.getElementById('kpi-maxdrop').textContent = `${maxDropVal} 元`;
+      document.getElementById('kpi-maxdrop-pct').textContent = `自均價最多可跌 ${maxDropPct}% 不傷本金`;
+
+      document.getElementById('kpi-erosion').textContent = `${erosionPct}%`;
+      document.getElementById('kpi-erosion-sub').textContent = `總稅費與匯費共 ${totalFriction} 元 / 帳面股息 ${totalDivGross} 元`;
+
+      document.getElementById('kpi-now-price').textContent = pNow.toFixed(2);
+      const nowPnlEl = document.getElementById('kpi-now-pnl');
+      nowPnlEl.textContent = `${totalPnLNow >= 0 ? '+' : ''}${totalPnLNow.toLocaleString()} 元`;
+      nowPnlEl.style.color = totalPnLNow > 0 ? 'var(--tw-red)' : (totalPnLNow < 0 ? 'var(--tw-green)' : '#fff');
+
+      const nowStatusEl = document.getElementById('kpi-now-status');
+      if (pNow >= pBuy) {
+        nowStatusEl.textContent = `狀態：完全填息獲利中 (含息報酬 +${totalRoiNow}%)`;
+      } else if (totalPnLNow >= 0) {
+        const eatenPct = totalDivNet > 0 ? Math.min(100, Math.round((Math.abs(capPnLNow) / totalDivNet) * 100)) : 0;
+        nowStatusEl.textContent = `狀態：股息緩衝中，吃掉 ${eatenPct}% 淨股利 (${totalRoiNow}%)`;
+      } else {
+        nowStatusEl.textContent = `狀態：跌破防線！股利吃光倒賠本金 (${totalRoiNow}%)`;
+      }
+
+      // Update Visual Scale Ruler
+      const scaleMin = Math.min(pureExPrice - 1.2, pNow - 0.8, 30.00);
+      const scaleMax = Math.max(pBuy + 1.0, pNow + 0.8, 35.00);
+      const span = scaleMax - scaleMin;
+
+      const pctEx = Math.max(3, Math.min(97, ((pureExPrice - scaleMin) / span) * 100));
+      const pctBE = Math.max(5, Math.min(95, ((pBE - scaleMin) / span) * 100));
+      const pctBuy = Math.max(8, Math.min(96, ((pBuy - scaleMin) / span) * 100));
+      const pctNow = Math.max(3, Math.min(97, ((pNow - scaleMin) / span) * 100));
+
+      document.getElementById('mk-ex').style.left = `${pctEx}%`;
+      document.getElementById('mk-ex-txt').textContent = `除息價 ${pureExPrice.toFixed(2)}`;
+
+      document.getElementById('mk-be').style.left = `${pctBE}%`;
+      document.getElementById('mk-be-txt').textContent = `打平防線 ${pBE.toFixed(2)}`;
+
+      document.getElementById('mk-buy').style.left = `${pctBuy}%`;
+      document.getElementById('mk-buy-txt').textContent = `買進均價 ${pBuy.toFixed(2)}`;
+
+      document.getElementById('mk-now').style.left = `${pctNow}%`;
+      document.getElementById('mk-now-txt').textContent = `▲ 測試市價 ${pNow.toFixed(2)}`;
+
+      const lossWidth = Math.max(0, Math.min(100, pctBE));
+      const bufferWidth = Math.max(0, Math.min(100 - lossWidth, pctBuy - pctBE));
+      const profitWidth = Math.max(0, 100 - lossWidth - bufferWidth);
+
+      document.getElementById('bar-loss').style.width = `${lossWidth}%`;
+      document.getElementById('bar-buffer').style.width = `${bufferWidth}%`;
+      document.getElementById('bar-profit').style.width = `${profitWidth}%`;
+
+      // Update Insight Text
+      document.getElementById('insight-text').innerHTML = `
+        💡 <strong>實戰診斷：</strong>在持有 <strong>${shares.toLocaleString()} 股</strong>（買進總成本 <strong>${cBuy.toLocaleString()} 元</strong>）並領息 <strong>${quarters} 次</strong>下，帳面股息 ${totalDivGross.toLocaleString()} 元扣除匯費後實拿 <strong>${totalDivNet.toLocaleString()} 元</strong>。
+        計入賣出稅費後，你的<strong>真實含息打平防線為 ${pBE.toFixed(2)} 元</strong>。只要股價守在 <strong>${pBE.toFixed(2)} 元以上</strong>，配發的股利就不會被跌價完全吃光！
+      `;
+
+      // 6. Populate Price Drop Sensitivity Matrix
+      const step = parseFloat(document.getElementById('sel-step').value) || 0.25;
+      const priceSet = new Set();
+
+      // Add regular intervals around pBuy and pBE
+      const topPrice = Math.ceil((pBuy + step * 3) * 100) / 100;
+      const bottomPrice = Math.min(30.46, Math.floor((pBE - step * 6) * 100) / 100);
+
+      for (let p = topPrice; p >= bottomPrice; p -= step) {
+        priceSet.add(p.toFixed(2));
+      }
+      // Inject key milestone prices
+      priceSet.add(pBuy.toFixed(2));
+      priceSet.add(pNow.toFixed(2));
+      priceSet.add(pBE.toFixed(2));
+      priceSet.add(pureExPrice.toFixed(2));
+      priceSet.add((30.46).toFixed(2)); // 前波低點
+
+      const sortedPrices = Array.from(priceSet)
+        .map(v => parseFloat(v))
+        .sort((a, b) => b - a);
+
+      const tbody = document.getElementById('matrix-body');
+      tbody.innerHTML = '';
+
+      sortedPrices.forEach(p => {
+        const s = calcSellNet(p, shares, discount, minFee);
+        const capDiff = s.net - cBuy;
+        const netTotal = capDiff + totalDivNet;
+        const priceDiff = p - pBuy;
+        const priceDiffPct = ((priceDiff / pBuy) * 100).toFixed(2);
+
+        const isBE = Math.abs(p - pBE) < 0.005;
+        const isBuy = Math.abs(p - pBuy) < 0.005;
+        const isNow = Math.abs(p - pNow) < 0.005;
+        const isEx = Math.abs(p - pureExPrice) < 0.005;
+        const isLow = Math.abs(p - 30.46) < 0.005;
+
+        const tr = document.createElement('tr');
+        if (isBE) tr.classList.add('row-highlight-be');
+        else if (isNow) tr.classList.add('row-highlight-now');
+
+        let tagHtml = '';
+        if (isBE) tagHtml += ` <span class="status-pill pill-buffer">★ 打平防線</span>`;
+        if (isBuy) tagHtml += ` <span class="status-pill pill-profit">買進均價</span>`;
+        if (isNow && !isBuy && !isBE) tagHtml += ` <span class="status-pill" style="background:#0284c7;color:#fff;">測試市價</span>`;
+        if (isEx && !isBE) tagHtml += ` <span class="status-pill" style="background:#475569;color:#fff;">除息參考價</span>`;
+        if (isLow) tagHtml += ` <span class="status-pill pill-loss">前波低點</span>`;
+
+        let statusHtml = '';
+        if (capDiff >= 0) {
+          statusHtml = `<span class="status-pill pill-profit">100% 保住股利 + 賺價差 ${capDiff} 元</span>`;
+        } else if (netTotal >= 0) {
+          const eatenRatio = totalDivNet > 0 ? Math.round((Math.abs(capDiff) / totalDivNet) * 100) : 100;
+          const keepRatio = Math.max(0, 100 - eatenRatio);
+          statusHtml = `<span class="status-pill pill-buffer">股利被吃掉 ${eatenRatio}% (保住 ${keepRatio}%)</span>`;
+        } else {
+          statusHtml = `<span class="status-pill pill-loss">股利吃光！倒賠本金 ${Math.abs(netTotal)} 元</span>`;
+        }
+
+        const diffClass = priceDiff > 0 ? 'text-up' : (priceDiff < 0 ? 'text-down' : '');
+        const capClass = capDiff > 0 ? 'text-up' : (capDiff < 0 ? 'text-down' : '');
+        const totalClass = netTotal > 0 ? 'text-up' : (netTotal < 0 ? 'text-down' : 'text-amber');
+
+        tr.innerHTML = `
+          <td><strong>${p.toFixed(2)} 元</strong>${tagHtml}</td>
+          <td class="${diffClass}">${priceDiff >= 0 ? '+' : ''}${priceDiff.toFixed(2)} (${priceDiff >= 0 ? '+' : ''}${priceDiffPct}%)</td>
+          <td>${s.net.toLocaleString()} 元</td>
+          <td class="${capClass}">${capDiff >= 0 ? '+' : ''}${capDiff.toLocaleString()} 元</td>
+          <td class="text-amber">+${totalDivNet.toLocaleString()} 元</td>
+          <td class="${totalClass}"><strong>${netTotal >= 0 ? '+' : ''}${netTotal.toLocaleString()} 元</strong></td>
+          <td>${statusHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      syncCalc();
+    });
+  </script>
+</body>
+</html>
